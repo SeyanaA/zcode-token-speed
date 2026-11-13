@@ -1,0 +1,17 @@
+{
+  "name": "token-speed",
+  "version": "0.1.0",
+  "description": "查询本地模型的平均 Token 输出速度（tokens/秒），支持按时间范围和模型细分。",
+  "author": {
+    "name": "ZCode local plugin"
+  },
+  "commands": "./commands",
+  "mcpServers": {
+    "token-speed": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["${CLAUDE_PLUGIN_ROOT}/mcp/token-speed-server.mjs"],
+      "timeoutMs": 20000
+    }
+  }
+}
