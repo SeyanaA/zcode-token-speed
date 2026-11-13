@@ -1,0 +1,14 @@
+# Local runtime files (never commit)
+config.json
+state.json
+patch.log
+patch-console.log
+patch.lock
+disabled
+backups/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
