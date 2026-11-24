@@ -326,11 +326,12 @@ function patchHost(original) {
       `avgDurationMs:${toolVar}.avgDurationMs}));let __tsDailySpeed=[];for(let __tsIndex=${startVar};__tsIndex<=${endVar};__tsIndex++){let __tsRow=${dayMapVar}.get(__tsIndex),__tsOut=__tsRow?.outputTokens??0,__tsDec=__tsRow?.decodeMs??0;__tsDailySpeed.push({date:${dateFn}(__tsIndex),outputTokens:__tsOut,decodeMs:__tsDec,tokensPerSecond:__tsDec>0?__tsOut*1e3/__tsDec:null})}return{range:t.range,`,
   );
 
-  text = replaceOnce(
+  text = replaceRegexOnce(
     text,
     "host builder return",
-    "heatmap:z,dailyModelUsage:q",
-    "heatmap:z,dailySpeed:__tsDailySpeed,dailyModelUsage:q",
+    /heatmap:([A-Za-z_$][\w$]*),dailyModelUsage:([A-Za-z_$][\w$]*),models:([A-Za-z_$][\w$]*),tools:([A-Za-z_$][\w$]*)\}\}/u,
+    (_match, heatmapVar, dailyVar, modelsVar, toolsVar) =>
+      `heatmap:${heatmapVar},dailySpeed:__tsDailySpeed,dailyModelUsage:${dailyVar},models:${modelsVar},tools:${toolsVar}}}`,
   );
 
   text = replaceRegexOnce(
@@ -450,8 +451,9 @@ function patchValidation(original) {
     "validation snapshot schema",
     /heatmap:([A-Za-z_$][\w$]*),dailyModelUsage:([A-Za-z_$][\w$]*)\(([A-Za-z_$][\w$]*)\)/u,
     (_match, heatmapVar, arrayAlias, itemVar) => {
+      const escapedItemVar = itemVar.replace(/[.*+?^${}()|[\]\\]/gu, "\\$&");
       const elementRe = new RegExp(
-        `\\b${itemVar}=([A-Za-z_$][\\w$]*)\\(\\{date:([A-Za-z_$][\\w$]*)\\(\\)`,
+        `(?:^|[^A-Za-z0-9_$])${escapedItemVar}=([A-Za-z_$][\\w$]*)\\(\\{date:([A-Za-z_$][\\w$]*)\\(\\)`,
         "u",
       );
       const elementMatch = text.match(elementRe);
